@@ -22,7 +22,8 @@ list_of_files <- lapply(data_files, FUN = function(x){
 #add data columns
 temp_all_data <- do.call(rbind,list_of_files) %>% 
   mutate(snow_position = case_when(str_detect(site,"D")==TRUE~"below", 
-                                   str_detect(site,"U")==TRUE~"above"),
+                                   str_detect(site,"U")==TRUE~"above",
+                                   .default = site),
          park_name = case_when(str_detect(site,"S")==TRUE~"Saint Sulpice",
                                str_detect(site,"K")==TRUE~"Kenauk",
                                str_detect(site,"O")==TRUE~"Oka",
@@ -42,7 +43,7 @@ check_sites <- temp_all_data %>% group_by(snow_position, park_name) %>% tally()
 # quick visualizations of data set
 summary(temp_all_data)
 str(temp_all_data)
-unique(temp_all_data)
+#unique(temp_all_data)
 
 # Clean and organize data --------------------------------------------------------------
 
@@ -92,4 +93,39 @@ temp_data_clean <- temp_data_clean %>%
 
 str(temp_data_clean)
 
-write.csv(temp_data_clean, "input/Temp_data_clean.csv")
+write.csv(temp_data_clean, "output/Temp_data_clean.csv")
+
+
+# define date and data range -------------------------------------------------------
+
+#filter out possible outliers remove data before and after installation
+
+temp_data_filtered <- temp_data_clean %>% 
+  filter(temperature_c > -45 & temperature_c < 20) %>%
+  filter((park_name=="Angrignon" & (date >= "2022-11-11" & time >= "11:20:00") 
+          & (date <= "2023-04-15" & time <= "14:30:00")) | 
+           (park_name=="Boise Jean Milot" & (date >= "2022-12-05" & time >= "12:00:00") 
+            & (date <= "2023-04-09" & time <= "12:15:00")) | 
+           (park_name=="Mont Saint Hilaire" & (date >= "2022-11-14" & time >= "12:15:00") 
+            & (date <= "2023-04-18" & time <= "12:00:00")) | 
+           (park_name=="Pointe aux Prairie" & (date >= "2022-12-05" & time >= "14:50:00") 
+            & (date <= "2023-04-09" & time <= "10:30:00")) | 
+           (park_name=="Botanical Gardens" & (date >= "2022-12-05" & time >= "10:30:00") 
+            & (date <= "2023-04-19" & time <= "12:00:00")) | 
+           (park_name=="Oka" & (date >= "2022-11-07" & time >= "12:00:00") 
+            & (date <= "2023-04-21" & time <= "11:30:00")) | 
+           (park_name=="Kenauk" & (date >= "2022-12-04" & time >= "13:30:00") 
+            & (date <= "2023-05-08" & time <= "10:00:00")) | 
+           (park_name=="Saint Sulpice" & (date >= "2022-11-30" & time >= "09:45:00") 
+            & (date <= "2023-04-09" & time <= "13:00:00")) | 
+           (park_name=="Mont Orford" & (date >= "2022-11-28" & time >= "13:30:00") 
+            & (date <= "2023-05-05" & time <= "10:00:00")) | 
+           (park_name=="Mont Saint Bruno" & (date >= "2022-11-19" & time >= "14:00:00") 
+            & (date <= "2023-04-18" & time <= "09:20:00"))) 
+
+
+#check that filters are working 
+temp_data_filtered %>% group_by(park_name) %>% summarize(max_date = max(date),
+                                                         min_date = min(date))
+
+write.csv(temp_data_filtered, "output/Temp_data_filtered.csv")
