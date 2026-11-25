@@ -7,6 +7,17 @@ temp_sensor_data <- read.csv("output/Temp_data_filtered.csv")
 
 str(temp_sensor_data)
 
+#group all urban sites together, for better visualizations
+temp_sensor_data <- temp_sensor_data %>%
+  mutate(
+    park_name = factor(
+      park_name,
+      levels = unique(
+        park_name[order(urban != "Yes", park_name)]
+      )
+    )
+  )
+
 # Visualizations ----------------------------------------------------------
 
 #ggplot(temp_sensor_data,
