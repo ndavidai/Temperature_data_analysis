@@ -99,33 +99,36 @@ write.csv(temp_data_clean, "output/Temp_data_clean.csv")
 # define date and data range -------------------------------------------------------
 
 #filter out possible outliers remove data before and after installation
+#based on ECCC historical data (of mostly urban areas) in the study region, the 
+#min temps ~ -32C (early Feb) and max temp ~ 25C (mid April) for the survey period
+#(https://climate.weather.gc.ca/historical_data/search_historic_data_e.html)
 
 temp_data_filtered <- temp_data_clean %>% 
-  filter(temperature_c > -45 & temperature_c < 20) %>%
-  filter((park_name=="Angrignon" & (date >= "2022-11-11" & time >= "11:20:00") 
-          & (date <= "2023-04-15" & time <= "14:30:00")) | 
-           (park_name=="Boise Jean Milot" & (date >= "2022-12-05" & time >= "12:00:00") 
-            & (date <= "2023-04-09" & time <= "12:15:00")) | 
-           (park_name=="Mont Saint Hilaire" & (date >= "2022-11-14" & time >= "12:15:00") 
-            & (date <= "2023-04-18" & time <= "12:00:00")) | 
-           (park_name=="Pointe aux Prairie" & (date >= "2022-12-05" & time >= "14:50:00") 
-            & (date <= "2023-04-09" & time <= "10:30:00")) | 
-           (park_name=="Botanical Gardens" & (date >= "2022-12-05" & time >= "10:30:00") 
-            & (date <= "2023-04-19" & time <= "12:00:00")) | 
-           (park_name=="Oka" & (date >= "2022-11-07" & time >= "12:00:00") 
-            & (date <= "2023-04-21" & time <= "11:30:00")) | 
-           (park_name=="Kenauk" & (date >= "2022-12-04" & time >= "13:30:00") 
-            & (date <= "2023-05-08" & time <= "10:00:00")) | 
-           (park_name=="Saint Sulpice" & (date >= "2022-11-30" & time >= "09:45:00") 
-            & (date <= "2023-04-09" & time <= "13:00:00")) | 
-           (park_name=="Mont Orford" & (date >= "2022-11-28" & time >= "13:30:00") 
-            & (date <= "2023-05-05" & time <= "10:00:00")) | 
-           (park_name=="Mont Saint Bruno" & (date >= "2022-11-19" & time >= "14:00:00") 
-            & (date <= "2023-04-18" & time <= "09:20:00"))) 
-
+  filter(temperature_c > -40 & temperature_c < 25) %>%
+  filter((park_name=="Angrignon" & (date_time >= "2022-11-11 11:20:00") 
+          & (date_time <= "2023-04-15 14:30:00")) | 
+           (park_name=="Boise Jean Milot" & (date_time >= "2022-12-05 12:00:00") 
+            & (date_time <= "2023-04-09 12:15:00")) | 
+           (park_name=="Mont Saint Hilaire" & (date_time >= "2022-11-14 12:15:00") 
+            & (date_time <= "2023-04-18 12:00:00")) | 
+           (park_name=="Pointe aux Prairie" & (date_time >= "2022-12-05 14:50:00") 
+            & (date_time <= "2023-04-09 10:30:00")) | 
+           (park_name=="Botanical Gardens" & (date_time >= "2022-12-05 10:30:00") 
+            & (date_time <= "2023-04-19 12:00:00")) | 
+           (park_name=="Oka" & (date_time >= "2022-11-07 12:00:00") 
+            & (date_time <= "2023-04-21 11:30:00")) | 
+           (park_name=="Kenauk" & (date_time >= "2022-12-04 13:30:00") 
+            & (date_time <= "2023-05-08 10:00:00")) | 
+           (park_name=="Saint Sulpice" & (date_time >= "2022-11-30 09:45:00") 
+            & (date_time <= "2023-04-09 13:00:00")) | 
+           (park_name=="Mont Orford" & (date_time >= "2022-11-28 13:30:00") 
+            & (date_time <= "2023-05-05 10:00:00")) | 
+           (park_name=="Mont Saint Bruno" & (date_time >= "2022-11-19 14:00:00") 
+            & (date_time <= "2023-04-18 09:20:00"))) 
 
 #check that filters are working 
 temp_data_filtered %>% group_by(park_name) %>% summarize(max_date = max(date),
                                                          min_date = min(date))
+str(temp_data_filtered)
 
 write.csv(temp_data_filtered, "output/Temp_data_filtered.csv")
